@@ -17,7 +17,7 @@ class ApiClient
       req.headers["Content-Type"] = "application/json"
       req.body = JSON.generate({ includes_description: true })
     end
-    JSON.parse(response.body, object_class: OpenStruct)
+    response.body
   end
 
   def self.get_workflows

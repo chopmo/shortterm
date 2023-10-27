@@ -30,7 +30,8 @@ class Runner
   end
 
   def open_epic(id)
-    stories = ApiClient.get_stories(id).reject(&:completed)
+    json = ApiClient.get_stories(id)
+    stories = JSON.parse(json, object_class: OpenStruct).reject(&:completed)
     Screens::Epic.new(stories, @workflow_states)
   end
 
