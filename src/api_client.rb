@@ -20,19 +20,13 @@ class ApiClient
     JSON.parse(response.body, object_class: OpenStruct)
   end
 
-  def self.get_workflow_states
+  def self.get_workflows
     response = Faraday.get("https://api.app.shortcut.com/api/v3/workflows") do |req|
       req.headers["Shortcut-Token"] = shortcut_api_token
       req.headers["Content-Type"] = "application/json"
       req.body = JSON.generate({ includes_description: false })
     end
-    workflow = JSON.parse(response.body, object_class: OpenStruct)[0]
-    result = {}
-    # TODO find a more elegant way
-    workflow.states.each do |s|
-      result[s.id] = s
-    end
-    result
+    response.body
   end
 
   def self.shortcut_api_token

@@ -62,6 +62,8 @@ module Screens
     end
 
     def print_summary_pane(story)
+      return if !story
+
       split_line = @win.maxy / 2
       @win.setpos(split_line, 0)
       divider = "-" * (@win.maxx - 1)
@@ -73,7 +75,7 @@ module Screens
       @win << "URL: " << story[:app_url]
       @win.clrtoeol
       @win << "\n"
-      @win.attron(Curses.color_pair(3)) { @win << "State: " << @workflow_states[story[:workflow_state_id]].name }
+      @win.attron(Curses.color_pair(3)) { @win << "State: " << @workflow_states.find(story[:workflow_state_id]).name }
       @win.clrtoeol
       @win << "\n"
       @win << "\n"
