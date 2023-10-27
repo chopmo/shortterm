@@ -17,8 +17,16 @@ class Runner
       File.write(workflow_cache, json)
     end
 
-    puts "Loading epics..."
-    @epics = ApiClient.get_epics.select(&:started).reject(&:completed).sort_by(&:name)
+    epics_cache = "tmp/epics.json"
+    if File.exists?(epics_cache)
+      puts "Using cached epics"
+      json = File.read(epics_cache)
+    else
+      puts "Loading epics..."
+      json = ApiClient.get_epics
+      File.write(epics_cache, json)
+    end
+    @epics = JSON.parse(json, object_class: OpenStruct).select(&:started).reject(&:completed).sort_by(&:name)
     # @test_stories = JSON.parse(File.read("tmp/stories.json"), object_class: OpenStruct).reject(&:completed)
   end
 
