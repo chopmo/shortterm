@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Save the dir we were invoked from
+project_dir="$PWD"
+
+# Go to the dir of this script because the Gemfile is here
+cd "$(dirname "$0")"
+
+# Invoke the script with the project dir to execute Git in
+bundle exec ruby ./main.rb $project_dir
+
+# Take the user back to the project dir
+cd $project_dir
