@@ -20,6 +20,14 @@ class ApiClient
     response.body
   end
 
+  def self.get_story(story_id)
+    response = Faraday.get("https://api.app.shortcut.com/api/v3/stories/#{story_id}") do |req|
+      req.headers["Shortcut-Token"] = shortcut_api_token
+      req.headers["Content-Type"] = "application/json"
+    end
+    response.body
+  end
+
   def self.get_workflows
     response = Faraday.get("https://api.app.shortcut.com/api/v3/workflows") do |req|
       req.headers["Shortcut-Token"] = shortcut_api_token

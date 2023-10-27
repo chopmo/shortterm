@@ -24,8 +24,9 @@ module Screens
       min_index = 0
 
       loop do
+        story = @stories[index]
         print_stories(@stories, index)
-        print_summary_pane(@stories[index])
+        print_summary_pane(story)
         print_help
 
         @win.refresh
@@ -40,6 +41,10 @@ module Screens
           index -= 1
         when 'K'
           index -= 10
+        when '10'
+          if story
+            return { action: :start_or_switch_to_story, id: story.id }
+          end
         when 'q'
           return { action: :open_epics }
         end
@@ -79,7 +84,9 @@ module Screens
       @win << "URL: " << story.app_url
       @win.clrtoeol
       @win << "\n"
-      @win.attron(Curses.color_pair(3)) { @win << "State: " << @workflow_states.find(story.workflow_state_id).name }
+      @win.attron(Curses.color_pair(3)) {
+        @win << "State: " << @workflow_states.find(story.workflow_state_id).name
+      }
       @win.clrtoeol
       @win << "\n"
       @win << "\n"
@@ -92,7 +99,7 @@ module Screens
     def print_help
       split_line = @win.maxy - 1
       @win.setpos(split_line, 0)
-      help_text = " j/J: Move down, k/K: Move up"
+      help_text = " j/J: Move down, k/K: Move up, RET: Start or switch to story branch, q: back to epics"
       @win.attron(Curses.color_pair(4)) {
         @win << help_text
         @win << " " * (@win.maxx - help_text.size)
