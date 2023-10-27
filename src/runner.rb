@@ -27,7 +27,6 @@ class Runner
       File.write(epics_cache, json)
     end
     @epics = JSON.parse(json, object_class: OpenStruct).select(&:started).reject(&:completed).sort_by(&:name)
-    # @test_stories = JSON.parse(File.read("tmp/stories.json"), object_class: OpenStruct).reject(&:completed)
   end
 
   def open_epic(id)
@@ -38,9 +37,6 @@ class Runner
   def loop
     epics_screen = Screens::Epics.new(@epics)
     screen = epics_screen
-
-    # screen = Screens::Epic.new(@test_stories, @workflow_states)
-
     while true
       command = screen.run
       case command[:action]
