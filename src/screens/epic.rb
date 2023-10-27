@@ -3,6 +3,7 @@ module Screens
     def initialize(stories, workflow_states)
       @stories = stories
       @workflow_states = workflow_states
+
     end
 
     def run
@@ -11,6 +12,8 @@ module Screens
       Curses.init_pair(1, 1, 0) # red
       Curses.init_pair(2, 2, 0) # green
       Curses.init_pair(3, 4, 0) # blue
+      Curses.init_pair(4, 0, 7) # black on white
+
       Curses.curs_set(0)
       Curses.noecho
 
@@ -23,6 +26,7 @@ module Screens
       loop do
         print_stories(@stories, index)
         print_summary_pane(@stories[index])
+        print_help
 
         @win.refresh
 
@@ -83,6 +87,17 @@ module Screens
       @win.clrtoeol
       @win << "\n"
       (@win.maxy - @win.cury).times {@win.deleteln()}
+    end
+
+    def print_help
+      split_line = @win.maxy - 1
+      @win.setpos(split_line, 0)
+      help_text = " j/J: Move down, k/K: Move up"
+      @win.attron(Curses.color_pair(4)) {
+        @win << help_text
+        @win << " " * (@win.maxx - help_text.size)
+        @win << "\n"
+      }
     end
   end
 end
