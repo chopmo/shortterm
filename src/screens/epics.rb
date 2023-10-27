@@ -2,6 +2,9 @@ module Screens
   class Epics
     def initialize(epics)
       @epics = epics
+      @index = 0
+      @max_index = @epics.size - 1
+      @min_index = 0
     end
 
     def run
@@ -13,9 +16,6 @@ module Screens
 
       win = Curses::Window.new(0, 0, 1, 2)
 
-      index = 0
-      max_index = @epics.size - 1
-      min_index = 0
 
       loop do
         win.setpos(0,0)
@@ -23,7 +23,7 @@ module Screens
         @epics.each.with_index(0) do |e, i|
           str = "#{e.id}: #{e.name}"
 
-          if i == index
+          if i == @index
             win.attron(Curses.color_pair(1)) { win << str }
           else
             win << str
@@ -37,11 +37,11 @@ module Screens
         str = win.getch.to_s
         case str
         when 'j'
-          index = [max_index, index + 1].min
+          @index = [@max_index, @index + 1].min
         when 'k'
-          index = [min_index, index - 1].max
+          @index = [@min_index, @index - 1].max
         when '10'
-          return { action: :open_epic, id: @epics[index].id }
+          return { action: :open_epic, id: @epics[@index].id }
         when 'q'
           return { action: :quit }
         end
