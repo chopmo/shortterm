@@ -2,31 +2,16 @@ require_relative 'screens/epics'
 require_relative 'screens/epic'
 require_relative 'api_client'
 require_relative 'git'
+require_relative 'cache'
 require_relative 'workflow_states'
 require 'curses'
 
 class Runner
   def load_initial_data
-    workflow_cache = "tmp/workflows.json"
-    if File.exists?(workflow_cache)
-      puts "Using cached workflows"
-      @workflow_states = WorkflowStates.parse(File.read(workflow_cache))
-    else
-      puts "Loading workflows..."
-      json = ApiClient.get_workflows
-      @workflow_states = WorkflowStates.parse(json)
-      File.write(workflow_cache, json)
-    end
+    json = Cache.read_through("tmp/workflows.json") { ApiClient.get_workflows }
+    @workflow_states = WorkflowStates.parse(json)
 
-    epics_cache = "tmp/epics.json"
-    if File.exists?(epics_cache)
-      puts "Using cached epics"
-      json = File.read(epics_cache)
-    else
-      puts "Loading epics..."
-      json = ApiClient.get_epics
-      File.write(epics_cache, json)
-    end
+    json = Cache.read_through("tmp/epics.json") { ApiClient.get_epics }
     @epics = JSON.parse(json, object_class: OpenStruct).select(&:started).reject(&:completed).sort_by(&:name)
   end
 
