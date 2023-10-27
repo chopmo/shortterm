@@ -79,11 +79,11 @@ module Screens
       @win << "URL: " << story[:app_url]
       @win.clrtoeol
       @win << "\n"
-      @win.attron(Curses.color_pair(3)) { @win << "State: " << @workflow_states.find(story[:workflow_state_id]).name }
+      @win.attron(Curses.color_pair(3)) { @win << "State: " << @workflow_states.find(story.workflow_state_id).name }
       @win.clrtoeol
       @win << "\n"
       @win << "\n"
-      @win << story[:description]
+      @win << story.description
       @win.clrtoeol
       @win << "\n"
       (@win.maxy - @win.cury).times {@win.deleteln()}

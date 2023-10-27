@@ -15,7 +15,7 @@ class ApiClient
     response = Faraday.get("https://api.app.shortcut.com/api/v3/epics/#{epic_id}/stories") do |req|
       req.headers["Shortcut-Token"] = shortcut_api_token
       req.headers["Content-Type"] = "application/json"
-      req.body = JSON.generate({ includes_description: false })
+      req.body = JSON.generate({ includes_description: true })
     end
     JSON.parse(response.body, object_class: OpenStruct)
   end
