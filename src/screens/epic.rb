@@ -60,7 +60,7 @@ module Screens
         str = "#{s.id}: #{s.name}"
 
         if i == current_index
-          @win.attron(Curses.color_pair(1)) { @win << str }
+          @win.attron(Curses.color_pair(4)) { @win << str }
         else
           @win << str
         end
