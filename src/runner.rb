@@ -21,7 +21,5 @@ class Runner
         exit 0
       end
     end
-
-    puts "hi"
   end
 end

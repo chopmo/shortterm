@@ -5,13 +5,8 @@ module Screens
     end
 
     def run
-      # config = File.read(File.expand_path('~/.ssh/config')).lines
-      # aliases = config.grep(/^Host/).map { |line| line.sub(/^Host/, '').strip }.sort
-
-
       Curses.init_screen
       Curses.start_color
-
       Curses.init_pair(1, 1, 0)
       Curses.curs_set(0)
       Curses.noecho
