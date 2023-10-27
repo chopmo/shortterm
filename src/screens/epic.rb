@@ -1,7 +1,8 @@
 module Screens
   class Epic
-    def initialize(stories)
+    def initialize(stories, workflow_states)
       @stories = stories
+      @workflow_states = workflow_states
     end
 
     def run
@@ -9,6 +10,7 @@ module Screens
       Curses.start_color
       Curses.init_pair(1, 1, 0) # red
       Curses.init_pair(2, 2, 0) # green
+      Curses.init_pair(3, 4, 0) # blue
       Curses.curs_set(0)
       Curses.noecho
 
@@ -69,6 +71,9 @@ module Screens
       @win.clrtoeol
       @win << "\n"
       @win << "URL: " << story[:app_url]
+      @win.clrtoeol
+      @win << "\n"
+      @win.attron(Curses.color_pair(3)) { @win << "State: " << @workflow_states[story[:workflow_state_id]].name }
       @win.clrtoeol
       @win << "\n"
       @win << "\n"
