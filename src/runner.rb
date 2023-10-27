@@ -10,7 +10,7 @@ class Runner
   end
 
   def open_epic(id)
-    stories = ApiClient.get_stories(id)
+    stories = ApiClient.get_stories(id).reject(&:completed)
     Screens::Epic.new(stories)
   end
 
