@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require "./src/api_client"
+
+# ApiClient.get_epics.select(&:started).reject(&:completed).sort_by(&:name).each do |e|
+#   puts "#{e.id}: #{e.name}"
+# end
+
+ApiClient.get_stories(72807).reject(&:completed).each do |s|
+  puts "#{s.id}: #{s.name}"
+end
