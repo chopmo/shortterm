@@ -1,6 +1,7 @@
 require_relative 'screens/epics'
 require_relative 'screens/epic'
 require_relative 'api_client'
+require_relative 'git'
 require_relative 'workflow_states'
 require 'curses'
 
@@ -37,28 +38,6 @@ class Runner
     Screens::Epic.new(stories, @workflow_states)
   end
 
-  def branch_name(story)
-    story_part = story.name.gsub(/[^a-zA-Z0-9 -]/, '')[0..40].split(/ /).join("-").downcase
-    "chopmo/sc-#{story.id}/#{story_part}"
-  end
-
-  def start_or_switch_to_story(id)
-    Curses.close_screen
-    story = JSON.parse(ApiClient.get_story(id), object_class: OpenStruct)
-
-    if story.branches.empty?
-      branch = branch_name(story)
-      `git co main`
-      `git pull`
-      `git co -b #{branch}`
-      `git push -u`
-      puts "Done. Created and pushed new branch #{branch}"
-      true
-    else
-      false
-    end
-  end
-
   def loop
     epics_screen = Screens::Epics.new(@epics)
     screen = epics_screen
@@ -70,7 +49,10 @@ class Runner
       when :open_epics
         screen = epics_screen
       when :start_or_switch_to_story
-        if start_or_switch_to_story(command[:id])
+        Curses.close_screen
+        story = JSON.parse(ApiClient.get_story(command[:id]),
+                           object_class: OpenStruct)
+        if Git.start_or_switch_to_story(story)
           exit 0
         end
       when :quit
