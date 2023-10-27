@@ -73,10 +73,10 @@ module Screens
       divider = "-" * (@win.maxx - 1)
       @win << divider
       @win << "\n"
-      @win.attron(Curses.color_pair(2)) { @win << story[:name] }
+      @win.attron(Curses.color_pair(2)) { @win << story.name }
       @win.clrtoeol
       @win << "\n"
-      @win << "URL: " << story[:app_url]
+      @win << "URL: " << story.app_url
       @win.clrtoeol
       @win << "\n"
       @win.attron(Curses.color_pair(3)) { @win << "State: " << @workflow_states.find(story.workflow_state_id).name }
