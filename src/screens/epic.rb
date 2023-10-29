@@ -33,7 +33,7 @@ module Screens
         scroll_pos = update_scroll_pos(scroll_pos, lines, story_pane_height)
         render_lines(0, lines.drop(scroll_pos))
         render_lines(story_pane_height + 1, summary_lines(story))
-        print_help
+        render_lines(@win.maxy - help_lines.size - 1, help_lines)
 
         @win.refresh
 
@@ -107,15 +107,11 @@ module Screens
       lines
     end
 
-    def print_help
-      split_line = @win.maxy - 1
-      @win.setpos(split_line, 0)
-      help_text = " j/J: Move down, k/K: Move up, RET: Start or switch to story branch, q: back to epics"
-      @win.attron(Curses.color_pair(4)) {
-        @win << help_text
-        @win << " " * (@win.maxx - help_text.size)
-        @win << "\n"
-      }
+    def help_lines
+      width = @win.maxx
+      help_text =
+        " j/J: Move down, k/K: Move up, RET: Start or switch to story branch, q: back to epics"
+      [[4,  "%-#{width}.#{width}s" % help_text]]
     end
 
     def get_state(story)
