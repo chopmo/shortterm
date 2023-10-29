@@ -14,12 +14,12 @@ module Screens
     def run
       @win = Curses::Window.new(0, 0, 1, 2)
 
-      filter_stories
       @story_idx = 0
       scroll_pos = 0
       story_pane_height = @win.maxy / 2 - 1
 
       loop do
+        filter_stories
         story = @stories[@story_idx]
 
         story_lines = get_story_lines(@stories, @story_idx)
@@ -137,7 +137,6 @@ module Screens
       else
         @shown_states.add(s)
       end
-      filter_stories
       @story_idx = 0
     end
   end
