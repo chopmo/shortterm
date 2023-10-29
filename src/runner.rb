@@ -21,6 +21,17 @@ class Runner
     Screens::Epic.new(stories, @workflow_states)
   end
 
+  def init_curses
+    Curses.init_screen
+    Curses.start_color
+    Curses.init_pair(1, 1, 0) # red
+    Curses.init_pair(2, 2, 0) # green
+    Curses.init_pair(3, 4, 0) # blue
+    Curses.init_pair(4, 0, 7) # black on white
+    Curses.curs_set(0)
+    Curses.noecho
+  end
+
   def loop
     epics_screen = Screens::Epics.new(@epics)
     screen = epics_screen

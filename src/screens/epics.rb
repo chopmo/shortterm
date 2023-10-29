@@ -8,15 +8,7 @@ module Screens
     end
 
     def run
-      Curses.init_screen
-      Curses.start_color
-      Curses.init_pair(1, 1, 0)
-      Curses.init_pair(2, 0, 7)
-      Curses.curs_set(0)
-      Curses.noecho
-
       win = Curses::Window.new(0, 0, 1, 2)
-
 
       loop do
         win.setpos(0,0)
@@ -25,7 +17,7 @@ module Screens
           str = "#{e.id}: #{e.name}"
 
           if i == @index
-            win.attron(Curses.color_pair(2)) { win << str }
+            win.attron(Curses.color_pair(4)) { win << str }
           else
             win << str
           end
