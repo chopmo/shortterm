@@ -32,8 +32,7 @@ module Screens
         lines = story_lines(@stories, story_idx)
         scroll_pos = update_scroll_pos(scroll_pos, lines, story_pane_height)
         render_lines(0, lines.drop(scroll_pos))
-
-        print_summary_pane(story)
+        render_lines(story_pane_height + 1, summary_lines(story))
         print_help
 
         @win.refresh
@@ -93,30 +92,19 @@ module Screens
       (@win.maxy - @win.cury).times {@win.deleteln()}
     end
 
-    def print_summary_pane(story)
-      return if !story
+    def summary_lines(story)
+      return [] if !story
 
-      split_line = @win.maxy / 2
-      @win.setpos(split_line, 0)
-      divider = "-" * (@win.maxx - 1)
-      @win << divider
-      @win << "\n"
-      @win.attron(Curses.color_pair(2)) { @win << story.name }
-      @win.clrtoeol
-      @win << "\n"
-      @win << "URL: " << story.app_url
-      @win.clrtoeol
-      @win << "\n"
-      @win.attron(Curses.color_pair(3)) {
-        @win << "State: " << get_state(story)
-      }
-      @win.clrtoeol
-      @win << "\n"
-      @win << "\n"
-      @win << story.description
-      @win.clrtoeol
-      @win << "\n"
-      (@win.maxy - @win.cury).times {@win.deleteln()}
+      lines = []
+
+      lines << [0, "-" * (@win.maxx - 1)]
+      lines << [2, story.name]
+      lines << [0, "URL: #{story.app_url}"]
+      lines << [3, "State: #{get_state(story)}"]
+      lines << [0, ""]
+      lines << [0, story.description]
+
+      lines
     end
 
     def print_help
