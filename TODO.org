@@ -6,8 +6,6 @@
 
 * Improvements
 
-** Group stories under state headings
-
 ** Allow filtering by states
 
 ** Scroll long lists

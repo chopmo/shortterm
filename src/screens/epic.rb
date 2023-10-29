@@ -3,7 +3,6 @@ module Screens
     def initialize(stories, workflow_states)
       @stories = stories
       @workflow_states = workflow_states
-
     end
 
     def run
@@ -56,15 +55,24 @@ module Screens
 
     def print_stories(stories, current_index)
       @win.setpos(0,0)
-      stories.each.with_index(0) do |s, i|
-        str = "#{s.id}: #{s.name}"
 
-        if i == current_index
-          @win.attron(Curses.color_pair(4)) { @win << str }
-        else
-          @win << str
+      i = 0
+      stories.group_by { |s| get_state(s) }.each do |state, stories|
+        @win.attron(Curses.color_pair(2)) { @win << state << ":\n" }
+
+        stories.each do |s|
+          str = "#{s.id}: #{s.name}"
+          if i == current_index
+            @win.attron(Curses.color_pair(4)) { @win << str }
+          else
+            @win << str
+          end
+          Curses.clrtoeol
+          @win << "\n"
+
+          i += 1
         end
-        Curses.clrtoeol
+
         @win << "\n"
       end
       (@win.maxy - @win.cury).times {@win.deleteln()}
@@ -85,7 +93,7 @@ module Screens
       @win.clrtoeol
       @win << "\n"
       @win.attron(Curses.color_pair(3)) {
-        @win << "State: " << @workflow_states.find(story.workflow_state_id).name
+        @win << "State: " << get_state(story)
       }
       @win.clrtoeol
       @win << "\n"
@@ -105,6 +113,10 @@ module Screens
         @win << " " * (@win.maxx - help_text.size)
         @win << "\n"
       }
+    end
+
+    def get_state(story)
+      @workflow_states.find(story.workflow_state_id).name
     end
   end
 end
