@@ -1,8 +1,12 @@
 module Screens
   class Epic
-    def initialize(stories, workflow_states)
-      @stories = stories
+    def initialize(all_stories, workflow_states)
+      @all_stories = all_stories
+      @stories = all_stories.reject(&:archived)
       @workflow_states = workflow_states
+
+      @show_unscheduled = true
+      @show_completed = false
     end
 
     def run
@@ -18,13 +22,17 @@ module Screens
 
       @win = Curses::Window.new(0, 0, 1, 2)
 
-      index = 0
-      max_index = @stories.size - 1
-      min_index = 0
+      story_idx = 0
+      scroll_pos = 0
+      story_pane_height = @win.maxy / 2 - 1
 
       loop do
-        story = @stories[index]
-        print_stories(@stories, index)
+        story = @stories[story_idx]
+
+        lines = story_lines(@stories, story_idx)
+        scroll_pos = update_scroll_pos(scroll_pos, lines, story_pane_height)
+        render_lines(0, lines.drop(scroll_pos))
+
         print_summary_pane(story)
         print_help
 
@@ -33,13 +41,13 @@ module Screens
         str = @win.getch.to_s
         case str
         when 'j'
-          index += 1
+          story_idx += 1
         when 'J'
-          index += 10
+          story_idx += 10
         when 'k'
-          index -= 1
+          story_idx -= 1
         when 'K'
-          index -= 10
+          story_idx -= 10
         when '10'
           if story
             return { action: :start_or_switch_to_story, id: story.id }
@@ -48,33 +56,40 @@ module Screens
           return { action: :open_epics }
         end
 
-        index = [index, max_index].min
-        index = [min_index, index].max
+        story_idx = [story_idx, @stories.size - 1].min
+        story_idx = [0, story_idx].max
       end
     end
 
-    def print_stories(stories, current_index)
-      @win.setpos(0,0)
-
+    def story_lines(stories, current_index)
+      lines = []
       i = 0
       stories.group_by { |s| get_state(s) }.each do |state, stories|
-        @win.attron(Curses.color_pair(2)) { @win << state << ":\n" }
+        lines << [2, "#{state}:"]
 
         stories.each do |s|
-          str = "#{s.id}: #{s.name}"
-          if i == current_index
-            @win.attron(Curses.color_pair(4)) { @win << str }
-          else
-            @win << str
-          end
-          Curses.clrtoeol
-          @win << "\n"
-
+          active = i == current_index
+          lines << [active ? 4 : 0, "#{s.id}: #{s.name}", active]
           i += 1
         end
 
-        @win << "\n"
+        lines << [0, ""]
       end
+
+      lines
+    end
+
+    def render_lines(y, lines)
+      @win.setpos(y, 0)
+
+      lines.each do |col, str|
+        @win.attron(Curses.color_pair(col)) {
+          @win << str
+          Curses.clrtoeol
+          @win << "\n"
+        }
+      end
+
       (@win.maxy - @win.cury).times {@win.deleteln()}
     end
 
@@ -117,6 +132,17 @@ module Screens
 
     def get_state(story)
       @workflow_states.find(story.workflow_state_id).name
+    end
+
+    def update_scroll_pos(current_pos, lines, height)
+      active_line_idx = lines.find_index { |_, _, active| active }
+      if active_line_idx < current_pos
+        active_line_idx
+      elsif active_line_idx > (current_pos + height)
+        active_line_idx - height
+      else
+        current_pos
+      end
     end
   end
 end
