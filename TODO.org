@@ -5,5 +5,4 @@
 * Improvements
 
 ** Allow filtering by states
-
-** Scroll long lists
+g
