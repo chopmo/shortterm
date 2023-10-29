@@ -3,6 +3,3 @@
 
 
 * Improvements
-
-** Allow filtering by states
-g

@@ -2,11 +2,13 @@ module Screens
   class Epic
     def initialize(all_stories, workflow_states)
       @all_stories = all_stories
-      @stories = all_stories.reject(&:archived)
       @workflow_states = workflow_states
+      @shown_states = Set["Ready for Development", "In Development", "Ready for Review"]
+    end
 
-      @show_unscheduled = true
-      @show_completed = false
+    def filter_stories
+      @stories = @all_stories.reject(&:archived)
+      @stories = @stories.reject { |s| !@shown_states.include?(get_state(s)) }
     end
 
     def run
@@ -22,14 +24,15 @@ module Screens
 
       @win = Curses::Window.new(0, 0, 1, 2)
 
-      story_idx = 0
+      filter_stories
+      @story_idx = 0
       scroll_pos = 0
       story_pane_height = @win.maxy / 2 - 1
 
       loop do
-        story = @stories[story_idx]
+        story = @stories[@story_idx]
 
-        story_lines = get_story_lines(@stories, story_idx)
+        story_lines = get_story_lines(@stories, @story_idx)
         scroll_pos = update_scroll_pos(scroll_pos, story_lines, story_pane_height)
         render_lines(0, story_lines.drop(scroll_pos))
 
@@ -43,13 +46,17 @@ module Screens
         str = @win.getch.to_s
         case str
         when 'j'
-          story_idx += 1
+          @story_idx += 1
         when 'J'
-          story_idx += 10
+          @story_idx += 10
         when 'k'
-          story_idx -= 1
+          @story_idx -= 1
         when 'K'
-          story_idx -= 10
+          @story_idx -= 10
+        when 'u'
+          toggle_shown_state("Unscheduled")
+        when 'c'
+          toggle_shown_state("Completed")
         when '10'
           if story
             return { action: :start_or_switch_to_story, id: story.id }
@@ -58,8 +65,8 @@ module Screens
           return { action: :open_epics }
         end
 
-        story_idx = [story_idx, @stories.size - 1].min
-        story_idx = [0, story_idx].max
+        @story_idx = [@story_idx, @stories.size - 1].min
+        @story_idx = [0, @story_idx].max
       end
     end
 
@@ -113,7 +120,7 @@ module Screens
     def get_help_lines
       width = @win.maxx
       help_text =
-        " j/J: Move down, k/K: Move up, RET: Start or switch to story branch, q: back to epics"
+        " j/J: Move down, k/K: Move up, u: Toggle unscheduled, c: Toggle completed, RET: Start or switch to story branch, q: back to epics"
       [[4,  "%-#{width}.#{width}s" % help_text]]
     end
 
@@ -122,6 +129,8 @@ module Screens
     end
 
     def update_scroll_pos(current_pos, lines, height)
+      return current_pos if lines.empty?
+
       active_line_idx = lines.find_index { |_, _, active| active }
       if active_line_idx < current_pos
         active_line_idx
@@ -130,6 +139,16 @@ module Screens
       else
         current_pos
       end
+    end
+
+    def toggle_shown_state(s)
+      if @shown_states.include?(s)
+        @shown_states.delete(s)
+      else
+        @shown_states.add(s)
+      end
+      filter_stories
+      @story_idx = 0
     end
   end
 end
