@@ -29,10 +29,13 @@ module Screens
       loop do
         story = @stories[story_idx]
 
-        lines = story_lines(@stories, story_idx)
-        scroll_pos = update_scroll_pos(scroll_pos, lines, story_pane_height)
-        render_lines(0, lines.drop(scroll_pos))
-        render_lines(story_pane_height + 1, summary_lines(story))
+        story_lines = get_story_lines(@stories, story_idx)
+        scroll_pos = update_scroll_pos(scroll_pos, story_lines, story_pane_height)
+        render_lines(0, story_lines.drop(scroll_pos))
+
+        render_lines(story_pane_height + 1, get_summary_lines(story))
+
+        help_lines = get_help_lines
         render_lines(@win.maxy - help_lines.size - 1, help_lines)
 
         @win.refresh
@@ -60,7 +63,7 @@ module Screens
       end
     end
 
-    def story_lines(stories, current_index)
+    def get_story_lines(stories, current_index)
       lines = []
       i = 0
       stories.group_by { |s| get_state(s) }.each do |state, stories|
@@ -92,7 +95,7 @@ module Screens
       (@win.maxy - @win.cury).times {@win.deleteln()}
     end
 
-    def summary_lines(story)
+    def get_summary_lines(story)
       return [] if !story
 
       lines = []
@@ -107,7 +110,7 @@ module Screens
       lines
     end
 
-    def help_lines
+    def get_help_lines
       width = @win.maxx
       help_text =
         " j/J: Move down, k/K: Move up, RET: Start or switch to story branch, q: back to epics"
