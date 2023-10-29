@@ -1,8 +1,6 @@
 
 * Bugs
 
-** Cache files should be stored relative to the directory the script is running from (not the user's project dir)
-
 
 * Improvements
 
