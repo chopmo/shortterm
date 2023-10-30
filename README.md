@@ -1,4 +1,4 @@
-# Termcut - Terminal client for Shortcut
+# Shortterm - Terminal client for Shortcut
 
 This is a minimal terminal client (TUI) for the project management
 tool Shortcut.
@@ -15,7 +15,7 @@ not meant to be a fully functional Shortcut client.
 1) Clone this repo and create an alias to the `run` script in the root, eg.
 
 ```
-alias sc='~/projects/termcut/run'
+alias sc='~/projects/shortterm/run'
 ```
 
 2) Create a Shortcut API token
