@@ -46,9 +46,7 @@ class Runner
         Curses.close_screen
         story = JSON.parse(ApiClient.get_story(command[:id]),
                            object_class: OpenStruct)
-        if Git.start_or_switch_to_story(story)
-          exit 0
-        end
+        Git.start_or_switch_to_story(story)
       when :quit
         Curses.close_screen
         exit 0

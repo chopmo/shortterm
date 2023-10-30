@@ -4,6 +4,7 @@ module Screens
       @all_stories = all_stories
       @workflow_states = workflow_states
       @shown_states = Set["Ready for Development", "In Development", "Ready for Review"]
+      @story_idx = 0
     end
 
     def filter_stories
@@ -14,7 +15,6 @@ module Screens
     def run
       @win = Curses::Window.new(0, 0, 1, 2)
 
-      @story_idx = 0
       scroll_pos = 0
       story_pane_height = @win.maxy / 2 - 1
 
