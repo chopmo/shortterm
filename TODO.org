@@ -4,7 +4,11 @@
 
 * Improvements
 
+** Copy story Shortcut URL to clipboard
+Because I need it in the git commits.
+
 ** Always show state headings (eg. "Unscheduled") even if the list is empty
+So we can see the applied filtering.
 
 ** Allow moving stories between states?
 
