@@ -1,13 +1,14 @@
+require_relative "base"
+
 module Screens
-  class Story
+  class Story < Base
     def initialize(story, workflow_states)
+      super()
       @story = story
       @workflow_states = workflow_states
     end
 
     def run
-      @win = Curses::Window.new(0, 0, 1, 2)
-
       loop do
         @win.setpos(0,0)
 
@@ -32,20 +33,6 @@ module Screens
       lines << [0, ""]
       lines << [0, story.description]
       lines
-    end
-
-    def render_lines(y, lines)
-      @win.setpos(y, 0)
-
-      lines.each do |col, str|
-        @win.attron(Curses.color_pair(col)) {
-          @win << str
-          Curses.clrtoeol
-          @win << "\n"
-        }
-      end
-
-      (@win.maxy - @win.cury).times {@win.deleteln()}
     end
 
     def get_state(story)

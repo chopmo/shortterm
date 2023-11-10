@@ -1,6 +1,9 @@
+require_relative 'base'
+
 module Screens
-  class Epic
+  class Epic < Base
     def initialize(all_stories, workflow_states)
+      super()
       @all_stories = all_stories
       @workflow_states = workflow_states
       @shown_states = Set["Ready for Development", "In Development", "Ready for Review"]
@@ -13,8 +16,6 @@ module Screens
     end
 
     def run
-      @win = Curses::Window.new(0, 0, 1, 2)
-
       scroll_pos = 0
       story_pane_height = @win.maxy / 2 - 1
 
@@ -76,20 +77,6 @@ module Screens
       end
 
       lines
-    end
-
-    def render_lines(y, lines)
-      @win.setpos(y, 0)
-
-      lines.each do |col, str|
-        @win.attron(Curses.color_pair(col)) {
-          @win << str
-          Curses.clrtoeol
-          @win << "\n"
-        }
-      end
-
-      (@win.maxy - @win.cury).times {@win.deleteln()}
     end
 
     def get_summary_lines(story)

@@ -1,6 +1,9 @@
+require_relative 'base'
+
 module Screens
-  class Epics
+  class Epics < Base
     def initialize(epics)
+      super()
       @epics = epics
       @index = 0
       @max_index = @epics.size - 1
@@ -8,26 +11,24 @@ module Screens
     end
 
     def run
-      win = Curses::Window.new(0, 0, 1, 2)
-
       loop do
-        win.setpos(0,0)
+        @win.setpos(0,0)
 
         @epics.each.with_index(0) do |e, i|
           str = "#{e.id}: #{e.name}"
 
           if i == @index
-            win.attron(Curses.color_pair(4)) { win << str }
+            @win.attron(Curses.color_pair(4)) { @win << str }
           else
-            win << str
+            @win << str
           end
           Curses.clrtoeol
-          win << "\n"
+          @win << "\n"
         end
-        (win.maxy - win.cury).times {win.deleteln()}
-        win.refresh
+        (@win.maxy - @win.cury).times {@win.deleteln()}
+        @win.refresh
 
-        str = win.getch.to_s
+        str = @win.getch.to_s
         case str
         when 'j'
           @index = [@max_index, @index + 1].min
