@@ -29,11 +29,6 @@ class Runner
         screens << Screens::Epic.new(command[:id])
       when :open_story
         screens << Screens::Story.new(command[:id])
-      when :start_or_switch_to_story
-        Curses.close_screen
-        story = JSON.parse(ApiClient.get_story(command[:id]),
-                           object_class: OpenStruct)
-        Git.start_or_switch_to_story(story)
       when :quit
         Curses.close_screen
         exit 0
