@@ -30,6 +30,12 @@ module Screens
       (@win.maxy - @win.cury).times {@win.deleteln()}
     end
 
+    def render_help_line(s)
+      set_current_line(@win.maxy - 2)
+      width = @win.maxx
+      render_lines([[4,  " %-#{width}.#{width}s" % s]])
+    end
+
     def get_story_state(story)
       @workflow_states.find(story.workflow_state_id).name
     end

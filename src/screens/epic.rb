@@ -42,9 +42,9 @@ module Screens
         set_current_line(story_pane_height + 1)
         render_lines(get_summary_lines(story))
 
-        help_lines = get_help_lines
-        set_current_line(@win.maxy - help_lines.size - 1)
-        render_lines(help_lines)
+        render_help_line(
+          "j/J: Move down, k/K: Move up, g: Reload, u: Toggle unscheduled, c: Toggle completed, RET: Start or switch to story branch, q: back to epics"
+        )
 
         @win.refresh
 
@@ -110,13 +110,6 @@ module Screens
       lines << [0, story.description]
 
       lines
-    end
-
-    def get_help_lines
-      width = @win.maxx
-      help_text =
-        " j/J: Move down, k/K: Move up, u: Toggle unscheduled, c: Toggle completed, RET: Start or switch to story branch, q: back to epics"
-      [[4,  "%-#{width}.#{width}s" % help_text]]
     end
 
     def update_scroll_pos(current_pos, lines, height)

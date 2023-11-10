@@ -34,6 +34,9 @@ module Screens
         lines = get_lines
         @selected_line ||= first_selectable_line(lines)
         render_lines(lines, @selected_line)
+        render_help_line(
+          "j: Move down, k: Move up, g: Reload, RET: Perform action, q: Back to epic"
+        )
 
         @win.refresh
         str = @win.getch.to_s
@@ -63,7 +66,7 @@ module Screens
       lines << [0, @story.description]
       lines << [2, "Branches:"]
       @story.branches.each do |b|
-        lines << [0, b.name, { action: :select_branch, name: b.name }]
+        lines << [0, "Check out #{b.name}", { action: :select_branch, name: b.name }]
       end
       new_branch_name = Git.branch_name(@story)
       lines << [0,

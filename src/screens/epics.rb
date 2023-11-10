@@ -22,6 +22,7 @@ module Screens
       loop do
         set_current_line(0)
         render_lines(get_epic_lines(@epics), @index)
+        render_help_line("j: Move down, k: Move up, g: Reload, RET: Open epic, q: Quit")
 
         @win.refresh
         str = @win.getch.to_s
