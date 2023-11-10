@@ -4,6 +4,8 @@
 
 * Improvements
 
+** Keep selected story index on epic page when returning from story
+
 ** Copy story Shortcut URL to clipboard
 Because I need it in the git commits.
 
