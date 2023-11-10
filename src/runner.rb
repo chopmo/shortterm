@@ -7,12 +7,6 @@ require_relative 'cache'
 require 'curses'
 
 class Runner
-  def open_story(id)
-    json = ApiClient.get_story(id)
-    story = JSON.parse(json, object_class: OpenStruct)
-    Screens::Story.new(story)
-  end
-
   def init_curses
     Curses.init_screen
     Curses.start_color
@@ -34,7 +28,7 @@ class Runner
       when :open_epics
         screen = Screens::Epics.new
       when :open_story
-        screen = open_story(command[:id])
+        screen = Screens::Story.new(command[:id])
       when :start_or_switch_to_story
         Curses.close_screen
         story = JSON.parse(ApiClient.get_story(command[:id]),

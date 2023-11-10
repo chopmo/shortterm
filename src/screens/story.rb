@@ -2,11 +2,20 @@ require_relative "base"
 
 module Screens
   class Story < Base
-    def initialize(story)
+    def initialize(story_id)
       super()
-      @story = story
+      @story_id = story_id
       @selected_line = nil
+      load_story
     end
+
+    def load_story(bypass_cache: false)
+      json = Cache.read_through("story-#{@story_id}", bypass_cache: bypass_cache) {
+        ApiClient.get_story(@story_id)
+      }
+      @story = JSON.parse(json, object_class: OpenStruct)
+    end
+
 
     def handle_command(command)
       case command[:action]
@@ -29,6 +38,10 @@ module Screens
         @win.refresh
         str = @win.getch.to_s
         case str
+        when 'g'
+          Curses.close_screen
+          puts "Reloading..."
+          load_story(bypass_cache: true)
         when 'j'
           @selected_line += 1
         when 'k'
