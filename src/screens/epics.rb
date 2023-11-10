@@ -12,7 +12,8 @@ module Screens
 
     def run
       loop do
-        render_lines(0, get_epic_lines(@epics, @index))
+        set_current_line(0)
+        render_lines(get_epic_lines(@epics, @index))
 
         @win.refresh
         str = @win.getch.to_s

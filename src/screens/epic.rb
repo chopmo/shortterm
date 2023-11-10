@@ -25,12 +25,15 @@ module Screens
 
         story_lines = get_story_lines(@stories, @story_idx)
         scroll_pos = update_scroll_pos(scroll_pos, story_lines, story_pane_height)
-        render_lines(0, story_lines.drop(scroll_pos))
+        set_current_line(0)
+        render_lines(story_lines.drop(scroll_pos))
 
-        render_lines(story_pane_height + 1, get_summary_lines(story))
+        set_current_line(story_pane_height + 1)
+        render_lines(get_summary_lines(story))
 
         help_lines = get_help_lines
-        render_lines(@win.maxy - help_lines.size - 1, help_lines)
+        set_current_line(@win.maxy - help_lines.size - 1)
+        render_lines(help_lines)
 
         @win.refresh
 

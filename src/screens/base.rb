@@ -4,9 +4,11 @@ module Screens
       @win = Curses::Window.new(0, 0, 1, 2)
     end
 
-    def render_lines(y, lines)
+    def set_current_line(y)
       @win.setpos(y, 0)
+    end
 
+    def render_lines(lines)
       lines.each do |col, str|
         @win.attron(Curses.color_pair(col)) {
           @win << str

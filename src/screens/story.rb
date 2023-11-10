@@ -10,11 +10,9 @@ module Screens
 
     def run
       loop do
-        @win.setpos(0,0)
-
-        render_lines(0, get_summary_lines(@story))
+        set_current_line(0)
+        render_lines(get_summary_lines(@story))
         @win.refresh
-
         str = @win.getch.to_s
         case str
         when '10'
