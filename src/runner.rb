@@ -7,11 +7,6 @@ require_relative 'cache'
 require 'curses'
 
 class Runner
-  def load_initial_data
-    json = Cache.read_through("epics") { ApiClient.get_epics }
-    @epics = JSON.parse(json, object_class: OpenStruct).select(&:started).reject(&:completed).sort_by(&:name)
-  end
-
   def open_story(id)
     json = ApiClient.get_story(id)
     story = JSON.parse(json, object_class: OpenStruct)
@@ -30,15 +25,14 @@ class Runner
   end
 
   def loop
-    epics_screen = Screens::Epics.new(@epics)
-    screen = epics_screen
+    screen = Screens::Epics.new
     while true
       command = screen.run
       case command[:action]
       when :open_epic
         screen = Screens::Epic.new(command[:id])
       when :open_epics
-        screen = epics_screen
+        screen = Screens::Epics.new
       when :open_story
         screen = open_story(command[:id])
       when :start_or_switch_to_story

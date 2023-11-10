@@ -2,13 +2,22 @@ require_relative 'base'
 
 module Screens
   class Epics < Base
-    def initialize(epics)
+    def initialize
       super()
-      @epics = epics
+      load_epics
+    end
+
+    def load_epics(bypass_cache: false)
+      json = Cache.read_through("epics", bypass_cache: bypass_cache) {
+        ApiClient.get_epics
+      }
+      @epics = JSON.parse(json, object_class: OpenStruct).select(&:started).reject(&:completed).sort_by(&:name)
+
       @index = 0
       @max_index = @epics.size - 1
       @min_index = 0
     end
+
 
     def run
       loop do
@@ -18,6 +27,10 @@ module Screens
         @win.refresh
         str = @win.getch.to_s
         case str
+        when 'g'
+          Curses.close_screen
+          puts "Reloading..."
+          load_epics(bypass_cache: true)
         when 'j'
           @index = [@max_index, @index + 1].min
         when 'k'
