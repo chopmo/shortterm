@@ -5,7 +5,11 @@ module Screens
     def initialize(epic_id)
       super()
       @epic_id = epic_id
-      @shown_states = Set["Ready for Development", "In Development", "Ready for Review"]
+      @shown_states = Set["Unscheduled",
+                          "Ready for Development",
+                          "In Development",
+                          "Ready for Review",
+                          "Completed"]
       load_stories
     end
 
