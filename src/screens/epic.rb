@@ -2,10 +2,16 @@ require_relative 'base'
 
 module Screens
   class Epic < Base
-    def initialize(all_stories)
+    def initialize(epic_id)
       super()
-      @all_stories = all_stories
+      @epic_id = epic_id
       @shown_states = Set["Ready for Development", "In Development", "Ready for Review"]
+      load_stories
+    end
+
+    def load_stories
+      json = ApiClient.get_stories(@epic_id)
+      @all_stories = JSON.parse(json, object_class: OpenStruct)
       @story_idx = 0
     end
 
@@ -38,6 +44,10 @@ module Screens
 
         str = @win.getch.to_s
         case str
+        when 'g'
+          Curses.close_screen
+          puts "Reloading..."
+          load_stories
         when 'j'
           @story_idx += 1
         when 'J'

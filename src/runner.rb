@@ -12,12 +12,6 @@ class Runner
     @epics = JSON.parse(json, object_class: OpenStruct).select(&:started).reject(&:completed).sort_by(&:name)
   end
 
-  def open_epic(id)
-    json = ApiClient.get_stories(id)
-    stories = JSON.parse(json, object_class: OpenStruct)
-    Screens::Epic.new(stories)
-  end
-
   def open_story(id)
     json = ApiClient.get_story(id)
     story = JSON.parse(json, object_class: OpenStruct)
@@ -42,7 +36,7 @@ class Runner
       command = screen.run
       case command[:action]
       when :open_epic
-        screen = open_epic(command[:id])
+        screen = Screens::Epic.new(command[:id])
       when :open_epics
         screen = epics_screen
       when :open_story
