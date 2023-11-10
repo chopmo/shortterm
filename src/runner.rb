@@ -1,5 +1,6 @@
 require_relative 'screens/epics'
 require_relative 'screens/epic'
+require_relative 'screens/story'
 require_relative 'api_client'
 require_relative 'git'
 require_relative 'cache'
@@ -19,6 +20,12 @@ class Runner
     json = ApiClient.get_stories(id)
     stories = JSON.parse(json, object_class: OpenStruct)
     Screens::Epic.new(stories, @workflow_states)
+  end
+
+  def open_story(id)
+    json = ApiClient.get_story(id)
+    story = JSON.parse(json, object_class: OpenStruct)
+    Screens::Story.new(story, @workflow_states)
   end
 
   def init_curses
@@ -42,6 +49,8 @@ class Runner
         screen = open_epic(command[:id])
       when :open_epics
         screen = epics_screen
+      when :open_story
+        screen = open_story(command[:id])
       when :start_or_switch_to_story
         Curses.close_screen
         story = JSON.parse(ApiClient.get_story(command[:id]),

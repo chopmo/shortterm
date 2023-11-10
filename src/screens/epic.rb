@@ -49,7 +49,7 @@ module Screens
           toggle_shown_state("Completed")
         when '10'
           if story
-            return { action: :start_or_switch_to_story, id: story.id }
+            return { action: :open_story, id: story.id }
           end
         when 'q'
           return { action: :open_epics }
