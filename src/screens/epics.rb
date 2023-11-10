@@ -18,11 +18,10 @@ module Screens
       @min_index = 0
     end
 
-
     def run
       loop do
         set_current_line(0)
-        render_lines(get_epic_lines(@epics, @index))
+        render_lines(get_epic_lines(@epics), @index)
 
         @win.refresh
         str = @win.getch.to_s
@@ -43,13 +42,8 @@ module Screens
       end
     end
 
-    def get_epic_lines(epics, current_index)
-      lines = []
-      epics.each.with_index(0) do |e, i|
-        active = i == current_index
-        lines << [active ? 4 : 0, "#{e.id}: #{e.name}"]
-      end
-      lines
+    def get_epic_lines(epics)
+      epics.map { |e| [0, "#{e.id}: #{e.name}"] }
     end
   end
 end
