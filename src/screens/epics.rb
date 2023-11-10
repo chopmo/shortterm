@@ -12,22 +12,9 @@ module Screens
 
     def run
       loop do
-        @win.setpos(0,0)
+        render_lines(0, get_epic_lines(@epics, @index))
 
-        @epics.each.with_index(0) do |e, i|
-          str = "#{e.id}: #{e.name}"
-
-          if i == @index
-            @win.attron(Curses.color_pair(4)) { @win << str }
-          else
-            @win << str
-          end
-          Curses.clrtoeol
-          @win << "\n"
-        end
-        (@win.maxy - @win.cury).times {@win.deleteln()}
         @win.refresh
-
         str = @win.getch.to_s
         case str
         when 'j'
@@ -40,6 +27,15 @@ module Screens
           return { action: :quit }
         end
       end
+    end
+
+    def get_epic_lines(epics, current_index)
+      lines = []
+      epics.each.with_index(0) do |e, i|
+        active = i == current_index
+        lines << [active ? 4 : 0, "#{e.id}: #{e.name}"]
+      end
+      lines
     end
   end
 end
