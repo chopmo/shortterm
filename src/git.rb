@@ -12,6 +12,34 @@ class Git
       system("git diff --cached --exit-code > /dev/null")
   end
 
+  def self.switch_to_branch(branch_name)
+    with_current_dir(ARGV[0]) do
+      if !working_tree_clean?
+        puts "The working tree is not clean."
+        return
+      end
+
+      `git co main`
+      `git pull`
+      `git fetch`
+      `git co #{branch_name}`
+    end
+  end
+
+  def self.create_branch(branch_name)
+    with_current_dir(ARGV[0]) do
+      if !working_tree_clean?
+        puts "The working tree is not clean."
+        return
+      end
+
+      `git co main`
+      `git pull`
+      `git co -b #{branch_name}`
+      `git push -u`
+    end
+  end
+
   def self.start_or_switch_to_story(story)
     with_current_dir(ARGV[0]) do
       if !working_tree_clean?
