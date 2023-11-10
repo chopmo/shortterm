@@ -1,7 +1,12 @@
+require_relative '../workflow_states'
+
 module Screens
   class Base
     def initialize
       @win = Curses::Window.new(0, 0, 1, 2)
+
+      json = Cache.read_through("tmp/workflows.json") { ApiClient.get_workflows }
+      @workflow_states = WorkflowStates.parse(json)
     end
 
     def set_current_line(y)
@@ -23,6 +28,10 @@ module Screens
       end
 
       (@win.maxy - @win.cury).times {@win.deleteln()}
+    end
+
+    def get_story_state(story)
+      @workflow_states.find(story.workflow_state_id).name
     end
   end
 end

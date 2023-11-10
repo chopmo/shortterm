@@ -4,14 +4,10 @@ require_relative 'screens/story'
 require_relative 'api_client'
 require_relative 'git'
 require_relative 'cache'
-require_relative 'workflow_states'
 require 'curses'
 
 class Runner
   def load_initial_data
-    json = Cache.read_through("tmp/workflows.json") { ApiClient.get_workflows }
-    @workflow_states = WorkflowStates.parse(json)
-
     json = Cache.read_through("tmp/epics.json") { ApiClient.get_epics }
     @epics = JSON.parse(json, object_class: OpenStruct).select(&:started).reject(&:completed).sort_by(&:name)
   end
@@ -19,13 +15,13 @@ class Runner
   def open_epic(id)
     json = ApiClient.get_stories(id)
     stories = JSON.parse(json, object_class: OpenStruct)
-    Screens::Epic.new(stories, @workflow_states)
+    Screens::Epic.new(stories)
   end
 
   def open_story(id)
     json = ApiClient.get_story(id)
     story = JSON.parse(json, object_class: OpenStruct)
-    Screens::Story.new(story, @workflow_states)
+    Screens::Story.new(story)
   end
 
   def init_curses

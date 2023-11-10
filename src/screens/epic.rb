@@ -2,17 +2,16 @@ require_relative 'base'
 
 module Screens
   class Epic < Base
-    def initialize(all_stories, workflow_states)
+    def initialize(all_stories)
       super()
       @all_stories = all_stories
-      @workflow_states = workflow_states
       @shown_states = Set["Ready for Development", "In Development", "Ready for Review"]
       @story_idx = 0
     end
 
     def filter_stories
       @stories = @all_stories.reject(&:archived)
-      @stories = @stories.reject { |s| !@shown_states.include?(get_state(s)) }
+      @stories = @stories.reject { |s| !@shown_states.include?(get_story_state(s)) }
     end
 
     def run
@@ -67,7 +66,7 @@ module Screens
     def get_story_lines(stories, current_index)
       lines = []
       i = 0
-      stories.group_by { |s| get_state(s) }.each do |state, stories|
+      stories.group_by { |s| get_story_state(s) }.each do |state, stories|
         lines << [2, "#{state}:"]
 
         stories.each do |s|
@@ -90,7 +89,7 @@ module Screens
       lines << [0, "-" * (@win.maxx - 1)]
       lines << [2, story.name]
       lines << [0, "URL: #{story.app_url}"]
-      lines << [3, "State: #{get_state(story)}"]
+      lines << [3, "State: #{get_story_state(story)}"]
       lines << [0, ""]
       lines << [0, story.description]
 
@@ -102,10 +101,6 @@ module Screens
       help_text =
         " j/J: Move down, k/K: Move up, u: Toggle unscheduled, c: Toggle completed, RET: Start or switch to story branch, q: back to epics"
       [[4,  "%-#{width}.#{width}s" % help_text]]
-    end
-
-    def get_state(story)
-      @workflow_states.find(story.workflow_state_id).name
     end
 
     def update_scroll_pos(current_pos, lines, height)

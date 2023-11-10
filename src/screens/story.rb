@@ -2,10 +2,9 @@ require_relative "base"
 
 module Screens
   class Story < Base
-    def initialize(story, workflow_states)
+    def initialize(story)
       super()
       @story = story
-      @workflow_states = workflow_states
       @selected_line = nil
     end
 
@@ -46,7 +45,7 @@ module Screens
       lines = []
       lines << [2, @story.name]
       lines << [0, "URL: #{@story.app_url}"]
-      lines << [3, "State: #{get_state(@story)}"]
+      lines << [3, "State: #{get_story_state(@story)}"]
       lines << [0, ""]
       lines << [0, @story.description]
       lines << [2, "Branches:"]
@@ -62,10 +61,6 @@ module Screens
 
     def first_selectable_line(lines)
       lines.find_index { |_col, _text, command| !!command }
-    end
-
-    def get_state(story)
-      @workflow_states.find(story.workflow_state_id).name
     end
   end
 end
