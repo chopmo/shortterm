@@ -49,7 +49,7 @@ module Screens
         when '10'
           handle_command(lines[@selected_line][2])
         when 'q'
-          return { action: :open_epic, id: @story.epic_id }
+          return { action: :pop_screen }
         end
       end
     end

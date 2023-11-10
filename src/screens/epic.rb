@@ -71,7 +71,7 @@ module Screens
             return { action: :open_story, id: story.id }
           end
         when 'q'
-          return { action: :open_epics }
+          return { action: :pop_screen }
         end
 
         @story_idx = [@story_idx, @stories.size - 1].min

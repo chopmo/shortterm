@@ -19,16 +19,16 @@ class Runner
   end
 
   def loop
-    screen = Screens::Epics.new
+    screens = [Screens::Epics.new]
     while true
-      command = screen.run
+      command = screens.last.run
       case command[:action]
+      when :pop_screen
+        screens.pop
       when :open_epic
-        screen = Screens::Epic.new(command[:id])
-      when :open_epics
-        screen = Screens::Epics.new
+        screens << Screens::Epic.new(command[:id])
       when :open_story
-        screen = Screens::Story.new(command[:id])
+        screens << Screens::Story.new(command[:id])
       when :start_or_switch_to_story
         Curses.close_screen
         story = JSON.parse(ApiClient.get_story(command[:id]),
