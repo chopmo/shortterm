@@ -64,6 +64,7 @@ module Screens
       lines << [3, "State: #{get_story_state(@story)}"]
       lines << [0, ""]
       lines << [0, @story.description]
+      lines << [0, ""]
       lines << [2, "Branches:"]
       @story.branches.each do |b|
         lines << [0, "Check out #{b.name}", { action: :select_branch, name: b.name }]
