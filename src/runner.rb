@@ -8,7 +8,7 @@ require 'curses'
 
 class Runner
   def load_initial_data
-    json = Cache.read_through("tmp/epics.json") { ApiClient.get_epics }
+    json = Cache.read_through("epics") { ApiClient.get_epics }
     @epics = JSON.parse(json, object_class: OpenStruct).select(&:started).reject(&:completed).sort_by(&:name)
   end
 

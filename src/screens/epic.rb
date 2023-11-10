@@ -9,8 +9,10 @@ module Screens
       load_stories
     end
 
-    def load_stories
-      json = ApiClient.get_stories(@epic_id)
+    def load_stories(bypass_cache: false)
+      json = Cache.read_through("epic-#{@epic_id}", bypass_cache: bypass_cache) {
+        ApiClient.get_stories(@epic_id)
+      }
       @all_stories = JSON.parse(json, object_class: OpenStruct)
       @story_idx = 0
     end
@@ -47,7 +49,7 @@ module Screens
         when 'g'
           Curses.close_screen
           puts "Reloading..."
-          load_stories
+          load_stories(bypass_cache: true)
         when 'j'
           @story_idx += 1
         when 'J'

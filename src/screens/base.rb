@@ -5,7 +5,7 @@ module Screens
     def initialize
       @win = Curses::Window.new(0, 0, 1, 2)
 
-      json = Cache.read_through("tmp/workflows.json") { ApiClient.get_workflows }
+      json = Cache.read_through("workflows") { ApiClient.get_workflows }
       @workflow_states = WorkflowStates.parse(json)
     end
 

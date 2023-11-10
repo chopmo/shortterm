@@ -1,9 +1,9 @@
 class Cache
-  def self.read_through(filename)
-    if File.exists?(filename)
+  def self.read_through(key, bypass_cache: false)
+    filename = "tmp/#{key}"
+    if File.exists?(filename) && !bypass_cache
       content = File.read(filename)
     else
-      puts "Caching content in #{filename}"
       content = yield
       File.write(filename, content)
     end
