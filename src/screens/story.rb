@@ -22,8 +22,8 @@ module Screens
       Curses.close_screen
       case command[:action]
       when :select_branch
+        project = get_project(command[:branch])
         Git.with_current_dir(project.path) do
-          project = get_project(command[:branch])
           Git.switch_to_branch(command[:branch].name)
         end
       when :create_branch
@@ -64,21 +64,6 @@ module Screens
       end
     end
 
-    def branch_commands
-      result = []
-
-      @story.branches.each do |b|
-        result << ["[#{get_repository(b)}] #{b.name}", { action: :select_branch, branch: b }]
-      end
-
-      new_branch_name = Git.branch_name(@story)
-      Config.project_dirs.each do |pd|
-        result << ["Create new branch [#{pd.repository}] #{new_branch_name}", { action: :create_branch, project: pd, branch_name: new_branch_name }]
-      end
-
-      result
-    end
-
     def get_lines
       lines = []
       lines << [2, @story.name]
@@ -89,8 +74,15 @@ module Screens
       lines << [0, ""]
       lines << [2, "Branches:"]
 
-      branch_commands.each do |label, cmd|
-        lines << [0, label, cmd]
+      @story.branches.each do |b|
+        lines << [0, "[#{get_repository(b)}] #{b.name}", { action: :select_branch, branch: b }]
+      end
+
+      new_branch_name = Git.branch_name(@story)
+      Config.project_dirs.each do |pd|
+        lines << [0,
+                  "Create new branch [#{pd.repository}] #{new_branch_name}",
+                  { action: :create_branch, project: pd, branch_name: new_branch_name }]
       end
 
       lines
