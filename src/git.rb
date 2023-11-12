@@ -13,38 +13,34 @@ class Git
   end
 
   def self.switch_to_branch(branch_name)
-    with_current_dir(ARGV[0]) do
-      if !working_tree_clean?
-        puts "The working tree is not clean."
-        return
-      end
-
-      `git co main`
-      `git pull`
-      `git fetch`
-      `git co #{branch_name}`
+    if !working_tree_clean?
+      puts "The working tree is not clean."
+      return
     end
+
+    `git co main`
+    `git pull`
+    `git fetch`
+    `git co #{branch_name}`
   end
 
   def self.create_branch(branch_name)
-    with_current_dir(ARGV[0]) do
-      if !working_tree_clean?
-        puts "The working tree is not clean."
-        return
-      end
-
-      `git co main`
-      `git pull`
-      `git co -b #{branch_name}`
-      `git push -u`
+    if !working_tree_clean?
+      puts "The working tree is not clean."
+      return
     end
+
+    `git co main`
+    `git pull`
+    `git co -b #{branch_name}`
+    `git push -u`
   end
 
   def self.with_current_dir(dir)
     old_dir = Dir.getwd
     Dir.chdir(dir)
     yield
-  rescue
+  ensure
     Dir.chdir(old_dir)
   end
 end

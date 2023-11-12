@@ -1,4 +1,5 @@
 require_relative "base"
+require_relative "../config"
 
 module Screens
   class Story < Base
@@ -6,6 +7,7 @@ module Screens
       super()
       @story_id = story_id
       @selected_line = nil
+      @pending_branch_command = nil
       load_story
     end
 
@@ -18,13 +20,21 @@ module Screens
 
 
     def handle_command(command)
-      case command[:action]
-      when :select_branch
-        Curses.close_screen
-        Git.switch_to_branch(command[:name])
-      when :create_branch
-        Curses.close_screen
-        Git.create_branch(command[:name])
+      if command[:action] == :project_dir_selected
+        Git.with_current_dir(command[:dir]) do
+          Curses.close_screen
+          case @pending_branch_command[:action]
+          when :select_branch
+            Git.switch_to_branch(@pending_branch_command[:name])
+          when :create_branch
+            Git.create_branch(@pending_branch_command[:name])
+          end
+          puts "Press any key..."
+          @win.getch
+        end
+      else
+        @pending_branch_command = command
+        @selected_line = nil
       end
     end
 
@@ -52,9 +62,27 @@ module Screens
         when '10'
           handle_command(lines[@selected_line][2])
         when 'q'
-          return { action: :pop_screen }
+          if @pending_branch_command
+            @pending_branch_command = nil
+            @selected_line = nil
+          else
+            return { action: :pop_screen }
+          end
         end
       end
+    end
+
+    def branch_commands
+      result = []
+
+      @story.branches.each do |b|
+        result << [b.name, { action: :select_branch, name: b.name }]
+      end
+
+      new_branch_name = Git.branch_name(@story)
+      result << ["Create new branch '#{new_branch_name}'", { action: :create_branch, name: new_branch_name }]
+
+      result
     end
 
     def get_lines
@@ -66,13 +94,21 @@ module Screens
       lines << [0, @story.description]
       lines << [0, ""]
       lines << [2, "Branches:"]
-      @story.branches.each do |b|
-        lines << [0, "Check out #{b.name}", { action: :select_branch, name: b.name }]
+
+      branch_commands.each do |label, cmd|
+        lines << [cmd == @pending_branch_command ? 1 : 0,
+                  label,
+                  @pending_branch_command ? nil : cmd]
       end
-      new_branch_name = Git.branch_name(@story)
-      lines << [0,
-                "Create new branch '#{new_branch_name}'",
-                { action: :create_branch, name: new_branch_name }]
+
+      if @pending_branch_command
+        lines << [0, ""]
+        lines << [2, "Project dirs:"]
+        Config.project_dirs.each do |d|
+          lines << [0, d, { action: :project_dir_selected, dir: d }]
+        end
+      end
+
       lines
     end
 
