@@ -1,1 +1,4 @@
-["/home/jtj/c/g/web", "/home/jtj/c/g/api"]
+[
+  { "repository": "gomore-web", "path": "/home/jtj/c/g/web" },
+  { "repository": "api", "path": "/home/jtj/c/g/api" }
+]

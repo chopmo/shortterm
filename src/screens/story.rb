@@ -105,7 +105,7 @@ module Screens
         lines << [0, ""]
         lines << [2, "Project dirs:"]
         Config.project_dirs.each do |d|
-          lines << [0, d, { action: :project_dir_selected, dir: d }]
+          lines << [0, "[#{d.repository}] #{d.path}", { action: :project_dir_selected, dir: d.path }]
         end
       end
 
