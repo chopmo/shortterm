@@ -1,7 +1,7 @@
 require 'json'
 
 class Config
-  def self.project_dirs
-    JSON.parse(File.read("config/project_dirs.json"), object_class: OpenStruct)
+  def self.projects
+    JSON.parse(File.read("config/projects.json"), object_class: OpenStruct)
   end
 end

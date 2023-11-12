@@ -79,10 +79,10 @@ module Screens
       end
 
       new_branch_name = Git.branch_name(@story)
-      Config.project_dirs.each do |pd|
+      Config.projects.each do |p|
         lines << [0,
-                  "Create new branch [#{pd.repository}] #{new_branch_name}",
-                  { action: :create_branch, project: pd, branch_name: new_branch_name }]
+                  "Create new branch [#{p.repository}] #{new_branch_name}",
+                  { action: :create_branch, project: p, branch_name: new_branch_name }]
       end
 
       lines
