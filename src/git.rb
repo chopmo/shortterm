@@ -18,9 +18,9 @@ class Git
       return
     end
 
-    `git co main`
-    `git pull`
-    `git fetch`
+    `git co -q main`
+    `git pull -q`
+    `git fetch -q`
     `git co #{branch_name}`
   end
 
@@ -30,8 +30,8 @@ class Git
       return
     end
 
-    `git co main`
-    `git pull`
+    `git co -q main`
+    `git pull -q`
     `git co -b #{branch_name}`
     `git push -u`
   end
