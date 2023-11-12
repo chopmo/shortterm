@@ -75,11 +75,19 @@ module Screens
       lines << [2, "Branches:"]
 
       @story.branches.each do |b|
-        lines << [0, "[#{get_repository(b)}] #{b.name}", { action: :select_branch, branch: b }]
+        lines << [0, "[#{get_repository(b).name}] #{b.name}", { action: :select_branch, branch: b }]
       end
 
       new_branch_name = Git.branch_name(@story)
       Config.projects.each do |p|
+        existing_branch = @story.branches.find { |b|
+          get_repository(b).name == p.repository && b.name == new_branch_name
+        }
+
+        if existing_branch
+          next
+        end
+
         lines << [0,
                   "Create new branch [#{p.repository}] #{new_branch_name}",
                   { action: :create_branch, project: p, branch_name: new_branch_name }]

@@ -45,7 +45,7 @@ module Screens
     end
 
     def get_repository(branch)
-      @repositories.find(branch.repository_id).name
+      @repositories.find(branch.repository_id)
     end
 
     def get_project(branch)
