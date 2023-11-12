@@ -1,4 +1,5 @@
 require_relative '../workflow_states'
+require_relative '../repositories'
 
 module Screens
   class Base
@@ -7,6 +8,9 @@ module Screens
 
       json = Cache.read_through("workflows") { ApiClient.get_workflows }
       @workflow_states = WorkflowStates.parse(json)
+
+      json = Cache.read_through("repositories") { ApiClient.get_repositories }
+      @repositories = Repositories.parse(json)
     end
 
     def set_current_line(y)
@@ -38,6 +42,10 @@ module Screens
 
     def get_story_state(story)
       @workflow_states.find(story.workflow_state_id).name
+    end
+
+    def get_repository(branch)
+      @repositories.find(branch.repository_id).name
     end
   end
 end

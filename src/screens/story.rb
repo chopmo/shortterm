@@ -76,7 +76,7 @@ module Screens
       result = []
 
       @story.branches.each do |b|
-        result << [b.name, { action: :select_branch, name: b.name }]
+        result << ["[#{get_repository(b)}] #{b.name}", { action: :select_branch, name: b.name }]
       end
 
       new_branch_name = Git.branch_name(@story)

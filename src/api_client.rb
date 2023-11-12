@@ -37,6 +37,14 @@ class ApiClient
     response.body
   end
 
+  def self.get_repositories
+    response = Faraday.get("https://api.app.shortcut.com/api/v3/repositories") do |req|
+      req.headers["Shortcut-Token"] = shortcut_api_token
+      req.headers["Content-Type"] = "application/json"
+    end
+    response.body
+  end
+
   def self.shortcut_api_token
     open(File.expand_path("~/.shortcut-api-token")).read
   rescue
