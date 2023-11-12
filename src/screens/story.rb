@@ -20,7 +20,15 @@ module Screens
 
 
     def handle_command(command)
-      if command[:action] == :project_dir_selected
+      if command[:action] == :select_branch
+        project = get_project(command[:branch])
+        Curses.close_screen
+        Git.with_current_dir(project.path) do
+          Git.switch_to_branch(command[:branch].name)
+        end
+        puts "Press any key..."
+        @win.getch
+      elsif command[:action] == :project_dir_selected
         Git.with_current_dir(command[:dir]) do
           Curses.close_screen
           case @pending_branch_command[:action]
@@ -76,7 +84,7 @@ module Screens
       result = []
 
       @story.branches.each do |b|
-        result << ["[#{get_repository(b)}] #{b.name}", { action: :select_branch, name: b.name }]
+        result << ["[#{get_repository(b)}] #{b.name}", { action: :select_branch, branch: b }]
       end
 
       new_branch_name = Git.branch_name(@story)

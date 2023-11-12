@@ -47,5 +47,9 @@ module Screens
     def get_repository(branch)
       @repositories.find(branch.repository_id).name
     end
+
+    def get_project(branch)
+      Config.project_dirs.find { |pd| pd.repository == get_repository(branch) }
+    end
   end
 end
