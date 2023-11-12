@@ -28,12 +28,17 @@ module Screens
         end
         puts "Press any key..."
         @win.getch
+      elsif command[:action] == :create_branch
+        Curses.close_screen
+        Git.with_current_dir(command[:project].path) do
+          Git.create_branch(command[:branch_name])
+        end
+        puts "Press any key..."
+        @win.getch
       elsif command[:action] == :project_dir_selected
         Git.with_current_dir(command[:dir]) do
           Curses.close_screen
           case @pending_branch_command[:action]
-          when :select_branch
-            Git.switch_to_branch(@pending_branch_command[:name])
           when :create_branch
             Git.create_branch(@pending_branch_command[:name])
           end
@@ -88,7 +93,9 @@ module Screens
       end
 
       new_branch_name = Git.branch_name(@story)
-      result << ["Create new branch '#{new_branch_name}'", { action: :create_branch, name: new_branch_name }]
+      Config.project_dirs.each do |pd|
+        result << ["Create new branch [#{pd.repository}] #{new_branch_name}", { action: :create_branch, project: pd, branch_name: new_branch_name }]
+      end
 
       result
     end
