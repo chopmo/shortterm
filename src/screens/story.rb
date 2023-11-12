@@ -18,23 +18,6 @@ module Screens
     end
 
 
-    def handle_command(command)
-      Curses.close_screen
-      case command[:action]
-      when :select_branch
-        project = get_project(command[:branch])
-        Git.with_current_dir(project.path) do
-          Git.switch_to_branch(command[:branch].name)
-        end
-      when :create_branch
-        Git.with_current_dir(command[:project].path) do
-          Git.create_branch(command[:branch_name])
-        end
-      end
-      puts "Press any key..."
-      @win.getch
-    end
-
     def run
       loop do
         set_current_line(0)
@@ -57,7 +40,7 @@ module Screens
         when 'k'
           @selected_line -= 1
         when '10'
-          handle_command(lines[@selected_line][2])
+          lines[@selected_line][2]&.call
         when 'q'
           return { action: :pop_screen }
         end
@@ -75,7 +58,17 @@ module Screens
       lines << [2, "Branches:"]
 
       @story.branches.each do |b|
-        lines << [0, "[#{get_repository(b).name}] #{b.name}", { action: :select_branch, branch: b }]
+        label = "[#{get_repository(b).name}] #{b.name}"
+        command = Proc.new do
+          Curses.close_screen
+          project = get_project(b)
+          Git.with_current_dir(project.path) do
+            Git.switch_to_branch(b.name)
+          end
+          puts "Press any key..."
+          @win.getch
+        end
+        lines << [0, label, command]
       end
 
       new_branch_name = Git.branch_name(@story)
@@ -88,9 +81,16 @@ module Screens
           next
         end
 
-        lines << [0,
-                  "Create new branch [#{p.repository}] #{new_branch_name}",
-                  { action: :create_branch, project: p, branch_name: new_branch_name }]
+        label = "Create new branch [#{p.repository}] #{new_branch_name}"
+        command = Proc.new do
+          Curses.close_screen
+          Git.with_current_dir(p.path) do
+            Git.create_branch(new_branch_name)
+          end
+          puts "Press any key..."
+          @win.getch
+        end
+        lines << [0, label, command]
       end
 
       lines

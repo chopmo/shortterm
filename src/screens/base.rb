@@ -49,7 +49,7 @@ module Screens
     end
 
     def get_project(branch)
-      Config.projects.find { |pd| pd.repository == get_repository(branch) }
+      Config.projects.find { |p| p.repository == get_repository(branch).name }
     end
   end
 end
