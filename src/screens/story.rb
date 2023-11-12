@@ -40,7 +40,12 @@ module Screens
         when 'k'
           @selected_line -= 1
         when '10'
-          lines[@selected_line][2]&.call
+          if cmd = lines[@selected_line][2]
+            Curses.close_screen
+            cmd.call
+            puts "Press any key..."
+            @win.getch
+          end
         when 'q'
           return { action: :pop_screen }
         end
@@ -60,13 +65,10 @@ module Screens
       @story.branches.each do |b|
         label = "[#{get_repository(b).name}] #{b.name}"
         command = Proc.new do
-          Curses.close_screen
           project = get_project(b)
           Git.with_current_dir(project.path) do
             Git.switch_to_branch(b.name)
           end
-          puts "Press any key..."
-          @win.getch
         end
         lines << [0, label, command]
       end
@@ -83,12 +85,9 @@ module Screens
 
         label = "Create new branch [#{p.repository}] #{new_branch_name}"
         command = Proc.new do
-          Curses.close_screen
           Git.with_current_dir(p.path) do
             Git.create_branch(new_branch_name)
           end
-          puts "Press any key..."
-          @win.getch
         end
         lines << [0, label, command]
       end
