@@ -7,7 +7,6 @@ module Screens
       super()
       @story_id = story_id
       @selected_line = nil
-      @pending_branch_command = nil
       load_story
     end
 
@@ -20,35 +19,20 @@ module Screens
 
 
     def handle_command(command)
-      if command[:action] == :select_branch
-        project = get_project(command[:branch])
-        Curses.close_screen
+      Curses.close_screen
+      case command[:action]
+      when :select_branch
         Git.with_current_dir(project.path) do
+          project = get_project(command[:branch])
           Git.switch_to_branch(command[:branch].name)
         end
-        puts "Press any key..."
-        @win.getch
-      elsif command[:action] == :create_branch
-        Curses.close_screen
+      when :create_branch
         Git.with_current_dir(command[:project].path) do
           Git.create_branch(command[:branch_name])
         end
-        puts "Press any key..."
-        @win.getch
-      elsif command[:action] == :project_dir_selected
-        Git.with_current_dir(command[:dir]) do
-          Curses.close_screen
-          case @pending_branch_command[:action]
-          when :create_branch
-            Git.create_branch(@pending_branch_command[:name])
-          end
-          puts "Press any key..."
-          @win.getch
-        end
-      else
-        @pending_branch_command = command
-        @selected_line = nil
       end
+      puts "Press any key..."
+      @win.getch
     end
 
     def run
@@ -75,12 +59,7 @@ module Screens
         when '10'
           handle_command(lines[@selected_line][2])
         when 'q'
-          if @pending_branch_command
-            @pending_branch_command = nil
-            @selected_line = nil
-          else
-            return { action: :pop_screen }
-          end
+          return { action: :pop_screen }
         end
       end
     end
@@ -111,17 +90,7 @@ module Screens
       lines << [2, "Branches:"]
 
       branch_commands.each do |label, cmd|
-        lines << [cmd == @pending_branch_command ? 1 : 0,
-                  label,
-                  @pending_branch_command ? nil : cmd]
-      end
-
-      if @pending_branch_command
-        lines << [0, ""]
-        lines << [2, "Project dirs:"]
-        Config.project_dirs.each do |d|
-          lines << [0, "[#{d.repository}] #{d.path}", { action: :project_dir_selected, dir: d.path }]
-        end
+        lines << [0, label, cmd]
       end
 
       lines
