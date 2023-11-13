@@ -40,7 +40,7 @@ module Screens
         when 'k'
           @selected_line -= 1
         when '10'
-          if cmd = lines[@selected_line][2]
+          if cmd = lines[@selected_line][:command]
             Curses.close_screen
             cmd.call
             puts "Press any key..."
@@ -54,13 +54,13 @@ module Screens
 
     def get_lines
       lines = []
-      lines << [2, @story.name]
-      lines << [0, "URL: #{@story.app_url}"]
-      lines << [3, "State: #{get_story_state(@story)}"]
-      lines << [0, ""]
-      lines << [0, @story.description]
-      lines << [0, ""]
-      lines << [2, "Branches:"]
+      lines << { color: 2, text: @story.name }
+      lines << { text: "URL: #{@story.app_url}" }
+      lines << { color: 3, text: "State: #{get_story_state(@story)}"}
+      lines << {}
+      lines << { text: @story.description }
+      lines << {}
+      lines << { color: 2, text: "Branches:" }
 
       @story.branches.each do |b|
         label = "[#{get_repository(b).name}] #{b.name}"
@@ -70,7 +70,7 @@ module Screens
             Git.switch_to_branch(b.name)
           end
         end
-        lines << [0, label, command]
+        lines << { text: label, command: command }
       end
 
       new_branch_name = Git.branch_name(@story)
@@ -89,14 +89,14 @@ module Screens
             Git.create_branch(new_branch_name)
           end
         end
-        lines << [0, label, command]
+        lines << { text: label, command: command }
       end
 
       lines
     end
 
     def first_selectable_line(lines)
-      lines.find_index { |_col, _text, command| !!command }
+      lines.find_index { |l| !!l[:command] }
     end
   end
 end

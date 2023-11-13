@@ -19,10 +19,18 @@ module Screens
 
     def render_lines(lines, selected_line = nil)
       index = 0
-      lines.each do |col, str|
+      lines.each do |line|
+        if line.is_a?(Array)
+          col, str = line
+        else
+          col = line[:color] || 0
+          str = line[:text] || ""
+        end
+
         if index == selected_line
           col = 4
         end
+
         @win.attron(Curses.color_pair(col)) {
           @win << str
           Curses.clrtoeol
