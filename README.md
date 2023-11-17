@@ -30,3 +30,7 @@ the help line at the bottom for keyboard shortcuts.
 This was built for a "hack day" at work to play with curses and the
 Shortcut API. The code is messy in places and the tool is far from
 finished.
+
+
+Copying URLs to the clipboard requires `xsel` to be installed on Linux
+and is not expected to work on Windows.

@@ -1,5 +1,6 @@
 require_relative "base"
 require_relative "../config"
+require 'clipboard'
 
 module Screens
   class Story < Base
@@ -91,6 +92,9 @@ module Screens
         end
         lines << { text: label, command: command }
       end
+
+      lines << { text: "Copy story URL to clipboard",
+                 command: Proc.new { Clipboard.copy(@story.app_url) }}
 
       lines
     end

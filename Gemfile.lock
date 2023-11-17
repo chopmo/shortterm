@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     byebug (11.1.3)
+    clipboard (1.3.6)
     curses (1.4.2)
     faraday (1.10.3)
       faraday-em_http (~> 1.0)
@@ -34,6 +35,7 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
+  clipboard
   curses
   faraday
 
