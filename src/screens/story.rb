@@ -43,9 +43,11 @@ module Screens
         when '10'
           if cmd = lines[@selected_line][:command]
             Curses.close_screen
-            cmd.call
-            puts "Press any key..."
-            @win.getch
+            result = cmd.call
+            if !result
+              puts "Press any key..."
+              @win.getch
+            end
           end
         when 'q'
           return { action: :pop_screen }

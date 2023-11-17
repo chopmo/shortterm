@@ -15,25 +15,27 @@ class Git
   def self.switch_to_branch(branch_name)
     if !working_tree_clean?
       puts "The working tree is not clean."
-      return
+      return false
     end
 
     `git co -q main`
     `git pull -q`
     `git fetch -q`
     `git co #{branch_name}`
+    true
   end
 
   def self.create_branch(branch_name)
     if !working_tree_clean?
       puts "The working tree is not clean."
-      return
+      return false
     end
 
     `git co -q main`
     `git pull -q`
     `git co -b #{branch_name}`
     `git push -u`
+    true
   end
 
   def self.with_current_dir(dir)
