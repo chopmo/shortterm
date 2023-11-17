@@ -13,3 +13,7 @@ So we can see the applied filtering.
 ** Allow moving stories between states?
 
 ** Show comments on story
+
+** Navigate between states
+
+J/K in the Epic view should jump to the next/previous state instead of by 10 stories.
